@@ -8,10 +8,10 @@
 # include <cstddef>   // for std::size_t
 # include <optional>  // for std::optional
 
-# include "Task.h"     // for Task
-# include "LogType.h"  // for LogType
+#include "task.h"         // for Task
+#include "log/logType.h"  // for LogType
 
-class TaskManager : public QObject
+class TaskManager final : public QObject
 {
     Q_OBJECT
 public:
@@ -22,10 +22,10 @@ public:
     TaskManager& operator=(const TaskManager&) = delete;
 
     // operations
-    bool addTask(const QString& name, QString& outMsg);
-    bool removeTask(const QString& name, QString& outMsg);
-    bool completeTask(const QString& name, QString& outMsg);
-
+    bool addTask(const QString& name);
+    bool removeTask(const QString& name);
+    bool completeTask(const QString& name);
+    bool listTasks();
     /**
      * @brief Returns a formatted list of all tasks.
      *
@@ -34,8 +34,10 @@ public:
      *
      * @return A QString containing the list of all tasks.
      */
+    [[nodiscard]]
     QString listOfTasks() const;
 
+    [[nodiscard]]
     const std::vector<Task>& tasks() const noexcept { return m_tasks; }
 
 signals:
@@ -56,6 +58,7 @@ private:
      * @param name The name of the task to search for.
      * @return The index of the task if found; otherwise, std::nullopt.
      */
+    [[nodiscard]]
     std::optional<std::size_t> findTaskIndex(const QString& name) const;
 
     std::vector<Task> m_tasks;

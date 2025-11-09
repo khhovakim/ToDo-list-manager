@@ -1,4 +1,4 @@
-#include "TaskManager.h"
+#include "task/taskManager.h"
 
 #include <QObject>  // for QObject
 #include <QString>  // for QString
@@ -7,8 +7,8 @@
 #include <optional>  // for std::optional
 #include <cstddef>   // for std::size_t
 
-#include "Task.h"     // for Task
-#include "LogType.h"  // for LogType
+#include "log/logType.h"  // for LogeType
+#include "task/task.h"    // for Task
 
 TaskManager* TaskManager::instance()
 {
@@ -28,28 +28,37 @@ std::optional<std::size_t> TaskManager::findTaskIndex(const QString& name) const
         }
     }
 
-    // if don't find the Task
+    // If we don't find the Task
     return std::nullopt;
 }
 
 QString TaskManager::listOfTasks() const
 {
-    if ( m_tasks.empty() ) return QString( "No tasks." );
+    if ( m_tasks.empty() ) return { "No tasks." };
 
     QString out;
     for ( const auto& task : m_tasks ) {
         out.append(
             QString("%1 - %2\n")
-                .arg(task.name())
-                .arg(task.completed() ? "Completed" : "Pending")
+                .arg(task.name(), task.completed() ? "Completed" : "Pending")
         );
     }
 
     return out;
 }
 
-bool TaskManager::addTask(const QString& name, QString& outMsg)
+bool TaskManager::listTasks()
 {
+    const QString outMsg { listOfTasks() };
+    emit logMessage(outMsg, LogType::Success);
+    emit tasksUpdated();
+    return true;
+}
+
+
+bool TaskManager::addTask(const QString& name)
+{
+    QString outMsg;
     if ( findTaskIndex(name) ) {
         outMsg = QString( "Error: a task named \"%1\" already exists." )
                     .arg(name);
@@ -64,9 +73,10 @@ bool TaskManager::addTask(const QString& name, QString& outMsg)
     return true;
 }
 
-bool TaskManager::removeTask(const QString& name, QString& outMsg)
+bool TaskManager::removeTask(const QString& name)
 {
-    auto idx = findTaskIndex(name);
+    QString outMsg;
+    const auto idx = findTaskIndex(name);
     if ( idx == std::nullopt ) {
         outMsg = QString( "Error: task \"%1\" not found." ).arg(name);
         emit logMessage(outMsg, LogType::Error);
@@ -80,9 +90,10 @@ bool TaskManager::removeTask(const QString& name, QString& outMsg)
     return true;
 }
 
-bool TaskManager::completeTask(const QString& name, QString& outMsg)
+bool TaskManager::completeTask(const QString& name)
 {
-    auto idx = findTaskIndex(name);
+    QString outMsg;
+    const auto idx = findTaskIndex(name);
     if ( idx == std::nullopt ) {
         outMsg = QString( "Error: task \"%1\" not found." ).arg(name);
         emit logMessage(outMsg, LogType::Error);
