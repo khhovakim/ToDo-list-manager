@@ -1,7 +1,8 @@
 #ifndef   __Task_Manager__
 # define  __Task_Manager__
 
-# include <QObject>  // for QObject
+# include <QObject>  // Base class
+
 # include <QString>  // for QString
 
 # include <vector>    // for std::vector
@@ -9,12 +10,12 @@
 # include <optional>  // for std::optional
 
 #include "task.h"         // for Task
-#include "log/logType.h"  // for LogType
 
 class TaskManager final : public QObject
 {
     Q_OBJECT
 public:
+    [[nodiscard]]
     static TaskManager* instance();
 
     // Non-copyable
@@ -25,24 +26,13 @@ public:
     bool addTask(const QString& name);
     bool removeTask(const QString& name);
     bool completeTask(const QString& name);
-    bool listTasks();
-    /**
-     * @brief Returns a formatted list of all tasks.
-     *
-     * This function compiles all existing tasks into a single QString,
-     * typically separated by newlines or commas, suitable for display or output.
-     *
-     * @return A QString containing the list of all tasks.
-     */
-    [[nodiscard]]
-    QString listOfTasks() const;
+    bool listTasks() const;
 
     [[nodiscard]]
     const std::vector<Task>& tasks() const noexcept { return m_tasks; }
 
 signals:
     void tasksUpdated();
-    void logMessage(const QString& msg, LogType type);
 
 private:
     explicit TaskManager(QObject* parent = nullptr);
