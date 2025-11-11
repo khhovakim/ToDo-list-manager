@@ -1,0 +1,18 @@
+add_task -name {   Task 1   }
+add_task -name {   Task 2   }
+add_task -name {   Task 3   }
+add_task -name {   Task 4   }
+add_task -name {   Task 4   }
+add_task -name {   Task 5   }
+add_task -name {   Task 6   }
+list_tasks
+complete_task -name {Task 1}
+complete_task -name {task_name}
+complete_task -name {Task 2}
+list_tasks ergdvre
+list_tasks
+list_tasks
+remove_task -name {Task 2}
+list_tasks
+remove_task -name {Task 6}
+list_tasks argdsgef

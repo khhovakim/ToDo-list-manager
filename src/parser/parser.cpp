@@ -6,6 +6,8 @@
 #include <QRegularExpression>  // for QRegularExpression
 
 #include <functional>   // for std::function
+#include <iostream>
+#include <ostream>
 #include <utility>      // for std::make_unique
 #include <type_traits>  // for std::is_same_v
 
@@ -19,6 +21,10 @@
 #include "command/executeFileCmd.h"   // for ExecuteFileCmd
 
 namespace {
+    const char* const NameFlag = "-name";
+    const char* const FilePathFlag = "-file_path";
+    const char* const BatchCmd = "execute_file";
+
     using functionMap = QHash<QString, std::function<Cmd::Ptr(const QStringList&)>>;
 }
 
@@ -31,7 +37,6 @@ Cmd::Ptr Parser::createCmd(const QString& cmdLine)
     if ( args.isEmpty() ) return nullptr;
 
     const QString cmdName = args[0].toLower();
-    args.pop_front();
     static const functionMap function_map = {
         { "add_task"     , &createTemplateCmd<AddTaskCmd>      },
         { "remove_task"  , &createTemplateCmd<RmTaskCmd>       },
@@ -60,25 +65,47 @@ QString Parser::extractArgValue(const QStringList& args)
 {
     QString outMsg;
     LogManager* lm = LogManager::instance();
-    if ( args.size() < 2 ) {
-        outMsg =  "Error: Invalid arguments count.";
-        lm->log(outMsg, LogType::Error);
+
+    if ( args.size() < 3 ) {
+        outMsg = "Error: Invalid arguments count.";
+        lm->log( outMsg, LogType::Error );
         return "";
     }
 
-    if (const QString key = args.first(); key != "-name" || key != "-file_path" ) {
-        outMsg =  "Error: Missing required argument.";
-        lm->log(outMsg, LogType::Error);
+    const QString cmdName = args[0].toLower();
+    const QString key = cmdName == BatchCmd ? FilePathFlag : NameFlag;
+    const int keyIndex = args.indexOf(key);
+
+    if ( keyIndex == -1 || keyIndex != 1 ) {
+        outMsg = QString( "Error: Command '%1' expects a key (%2) as the second argument." )
+             .arg( cmdName )
+             .arg( key );
+        lm->log( outMsg, LogType::Error );
         return "";
     }
 
     // substring from key to end
-    const QString value = args.mid(1).join(' ');
-    if ( !value.startsWith( '{' ) && !value.endsWith( '}' ) ) {
-        outMsg = "Error: Invalid syntax. Value must be enclosed in '{' and '}'.";
-        lm->log(outMsg, LogType::Error);
+    const QString value = args.mid( keyIndex + 1 ).join(' ');
+
+    // Ensure value is enclosed in '{' and '}'
+    if ( !value.startsWith('{')  ) {
+        outMsg = QString( "Error: Invalid syntax for key '%1'. Value must start with '{'." ).arg( key );
+        lm->log( outMsg, LogType::Error );
         return "";
     }
 
-    return value.mid(1, value.size() - 2).trimmed();
+    const int idx = value.indexOf('}');
+    if ( idx == -1 ) {
+        outMsg = QString( "Error: Invalid syntax for key '%1'. Value must end with '}'." ).arg( key );
+        lm->log( outMsg, LogType::Error );
+        return "";
+    }
+
+    if ( idx < value.size() - 1 ) {
+        outMsg = "Error: Invalid arguments count.";
+        lm->log( outMsg, LogType::Error );
+        return "";
+    }
+
+    return value.mid( 1, idx - 1 ).trimmed();
 }

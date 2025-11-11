@@ -35,7 +35,8 @@ bool ExecuteFileCmd::execute() const
 
     std::size_t line { 0 };
     QTextStream stream( &file );
-    while ( stream.atEnd() ) {
+
+    while ( !stream.atEnd() ) {
         QString lineStr { stream.readLine().trimmed() };
         ++line;
 
@@ -44,17 +45,12 @@ bool ExecuteFileCmd::execute() const
         }
 
         const Cmd::Ptr cmd = Parser::createCmd( lineStr );
-        if ( !cmd ) {
+        if ( !cmd || !cmd->execute() ) {
             outMsg = QString( "Error: invalid command in file \"%1\" (line %2): %3" )
                             .arg( m_filePath )
                             .arg( line )
                             .arg( lineStr );
             lm->log( outMsg, LogType::Error );
-            return false;
-        }
-
-        if ( !cmd->execute() ) {
-            return false;
         }
     }
     return true;
