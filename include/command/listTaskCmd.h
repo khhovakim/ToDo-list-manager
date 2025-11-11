@@ -6,7 +6,7 @@
 class ListTaskCmd final : public Cmd
 {
 public:
-    ListTaskCmd() = default;
+    explicit  ListTaskCmd(const QString& name = QString()) {  Q_UNUSED(name); }
     ~ListTaskCmd() override = default;
 
     bool execute() const override;
