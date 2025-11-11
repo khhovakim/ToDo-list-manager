@@ -11,6 +11,7 @@ class QListWidget;
 class QTextEdit;
 class QLineEdit;
 class QPushButton;
+class QColor;
 
 class MainWindow final : public QMainWindow
 {
@@ -22,11 +23,12 @@ public:
 private slots:
     void onCommandEntered();
     void handleTasksUpdated();
-    void handleLogMessage(const QString& message, LogType logType);
+    void handleLogMessage(const QString& msg, LogType logType);
 
 private:
     void setupUi();
     void refreshTaskList();
+    void appendLog(const QString& msg, const QColor& color);
 
     QListWidget* m_taskList  { nullptr };
     QTextEdit*   m_logView   { nullptr };

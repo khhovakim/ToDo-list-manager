@@ -5,11 +5,14 @@
 #include <QVBoxLayout>      // for QVBoxLayout
 #include <QHBoxLayout>      // for QHBoxLayout
 #include <QLabel>           // for QLabel
+#include <QColor>           // for QColor
 #include <QListWidget>      // for QListWidget
 #include <QTextEdit>        // for QTextEdit
+#include <QTextCursor>      // for QTextCursor
 #include <QLineEdit>        // for QLineEdit
 #include <QPushButton>      // for QPushButton
 #include <QListWidgetItem>  // for QListWidgetItem
+#include <QTextCharFormat>  // for QTextCharFormat
 
 #include "task/taskManager.h"  // for TaskManager
 #include "log/logManager.h"    // for LogManager
@@ -138,9 +141,7 @@ void MainWindow::onCommandEntered()
     const Cmd::Ptr cmd = Parser::createCmd( cmdLine );
     if ( !cmd ) {
         const QString errMsg = QString( "Invalid command: %1" ).arg( cmdLine );
-        m_logView->setTextColor(Qt::red);
-        m_logView->append(errMsg);
-        m_logView->setTextColor(Qt::black);
+        appendLog(errMsg, Qt::red);
         m_cmdInput->clear();
         return ;
     }
@@ -149,14 +150,9 @@ void MainWindow::onCommandEntered()
     m_cmdInput->clear();
 }
 
-void MainWindow::handleLogMessage(const QString &message, const LogType logType)
+void MainWindow::handleLogMessage(const QString &msg, const LogType logType)
 {
-    if ( logType == LogType::Error ) {
-        m_logView->setTextColor(Qt::red);
-    }
-
-    m_logView->append(message);
-    m_logView->setTextColor(Qt::black);
+    appendLog(msg, logType == LogType::Error ? Qt::red : Qt::black);
 }
 
 void MainWindow::handleTasksUpdated()
@@ -178,5 +174,17 @@ void MainWindow::refreshTaskList()
 
         m_taskList->addItem(item);
     }
+}
 
+void MainWindow::appendLog(const QString& msg, const QColor& color)
+{
+    QTextCursor cursor = m_logView->textCursor();
+    cursor.movePosition(QTextCursor::End);
+    m_logView->setTextCursor(cursor);
+
+    QTextCharFormat format;
+    format.setForeground(color);
+    m_logView->setCurrentCharFormat(format);
+
+    m_logView->append(msg);
 }
