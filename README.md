@@ -33,6 +33,7 @@ Both Qt5 and Qt6 are supported.
 - **C++17 compiler**
 - **Optional: Qt Creator for IDE builds**
 
+
 ---
 #### 🐧 Build on Linux
 ```bash
@@ -49,19 +50,27 @@ Run the application
 ```
 ---
 ### 🪟 Build on Windows
+Please add these folders to your `PATH`:
+```powershell
+$env:PATH = "C:\Qt\Tools\Ninja;C:\Qt\Tools\CMake_64\bin;C:\Qt\Tools\mingw1310_64\bin;C:\Qt\<version>\mingw_64\bin;$env:PATH"
+```
 ```bash
 cd Path/To/ToDo-list-manager
 ```
 Configure with CMake
 ```bash
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=Path/To/(Qt6/Qt5)
+cmake -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Release 
 cmake --build build --config Release
 ```
 Run the application
 ```bash
 .\buld\TodoApp.exe
 ```
-
+If the app fails due to missing Qt DLLs, deploy with:
+```bash
+windeployqt.exe .\build\TodoApp.exe
+.\build\TodoApp.exe
+```
 ---
 
 ### 💡 3. How to Use This Project
