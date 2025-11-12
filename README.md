@@ -120,5 +120,5 @@ remove_task -name {Buy groceries}
 
 Run file into GUI:
 ```bash
-execute_file -file_path ./Full/Path/To/tasks.txt
+execute_file -file_path {./Full/Path/To/tasks.txt}
 ```
