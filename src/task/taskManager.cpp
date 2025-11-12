@@ -39,17 +39,25 @@ bool TaskManager::listTasks() const
     if ( m_tasks.empty() ) {
         outMsg = "No tasks.";
     } else {
-        std::size_t countNonCompleteTasks { 0 };
-        for ( const auto& task : m_tasks ) {
-            if ( !task.completed() ) {
-                ++countNonCompleteTasks;
-            }
+        std::size_t completedCount { 0 };
+        std::size_t pendingCount   { 0 };
+        for ( const auto &task : m_tasks ) {
+            if ( task.completed() )
+                ++completedCount;
+            else
+                ++pendingCount;
+
+            outMsg += QString( "%1 - %2\n" )
+                       .arg( task.name(), task.completed() ? "Completed" : "Pending" );
         }
 
-        outMsg = QString( "%1 tasks listed." ).arg( countNonCompleteTasks );
+        outMsg += QString( "\nSummary: %1 pending, %2 completed, %3 total." )
+                   .arg( pendingCount )
+                   .arg( completedCount )
+                   .arg( m_tasks.size() );
     }
     LogManager* lm = LogManager::instance();
-    lm->log(outMsg, LogType::Success);
+    lm->log( outMsg, LogType::Success );
     return true;
 }
 
