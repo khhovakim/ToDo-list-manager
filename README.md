@@ -55,7 +55,7 @@ Please add these folders to your `PATH`:
 $env:PATH = "C:\Qt\Tools\Ninja;C:\Qt\Tools\CMake_64\bin;C:\Qt\Tools\mingw1310_64\bin;C:\Qt\<version>\mingw_64\bin;$env:PATH"
 ```
 ```bash
-cd Path/To/ToDo-list-manager
+cd Path\To\ToDo-list-manager
 ```
 Configure with CMake
 ```bash
