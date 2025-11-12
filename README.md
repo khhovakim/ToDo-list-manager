@@ -80,11 +80,11 @@ After building successfully:
 
 - On **Linux**:
   ```bash
-  ./TodoApp
+  ./build/TodoApp
   ```
 - On **Windows**
   ```bash
-  .\TodoApp.exe
+  .\build\TodoApp.exe
   ```
 
 When you launch the app, you’ll see a simple and modern Qt interface with:
